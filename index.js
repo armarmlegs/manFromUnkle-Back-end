@@ -1,14 +1,18 @@
-require('./config/database.js')
-
+const Joi = require('Joi');
+require("./config/database.js");
 const express = require("express");
 
 
+const user = require('./routes/User')
+
 // Create the express app
 const app = express();
+// const bodyParser = require('body-parser')
 
 // Routes and middleware
-// app.use(/* ... */)
-// app.get(/* ... */)
+app.use(express.json());
+app.use('/api/users', user)
+
 
 // Error handlers
 app.use(function fourOhFourHandler(req, res) {
@@ -28,5 +32,5 @@ app.listen(port, function (err) {
     return console.error(err);
   }
 
-  console.log("Started at http://localhost:3000");
+  console.log(`Started at http://localhost:${port}`);
 });
