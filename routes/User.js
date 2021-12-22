@@ -6,8 +6,7 @@ const User = require("../models/Users.js");
 
 //get all Users
 router.get("/", async (req, res) => {
-  console.log("hello");
-  const user = await User.find().sort("name");
+ const user = await User.find().sort("name");
   res.send(user);
 });
 
@@ -51,11 +50,12 @@ router.put("/:id", async (req, res) => {
   }, {
       new:true
   });
-  if(!user) return res.status(404).send('no user with this id');
+  if(!user) return res.status(404).send('no user with this Id');
   res.send(user)
   console.log('user updated')
 });
 
+//delete a user
 
 router.delete('/:id', async (req,res)=>{
     const user =  await User.findByIdAndDelete(req.params.id);
@@ -64,6 +64,8 @@ router.delete('/:id', async (req,res)=>{
     console.log('user deleted')
 })
 
+
+//input validation using JOI
 function validateUser(user) {
   const schema = Joi.object({
     name: Joi.string().required(),

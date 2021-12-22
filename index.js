@@ -3,7 +3,10 @@ require("./config/database.js");
 const express = require("express");
 
 
-const user = require('./routes/User')
+const user = require('./routes/User');
+const contract = require('./routes/Contract');
+
+
 
 // Create the express app
 const app = express();
@@ -11,7 +14,8 @@ const app = express();
 
 // Routes and middleware
 app.use(express.json());
-app.use('/api/users', user)
+app.use('/api/users', user);
+app.use('/api/contracts', contract)
 
 
 // Error handlers
