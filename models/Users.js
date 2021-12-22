@@ -1,4 +1,5 @@
 require("../config/database.js");
+const Joi = require("Joi");
 const mongoose = require("mongoose");
 
 //création & sauvegarde des schemas &
@@ -9,6 +10,19 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { type: String, enum: ["admin", "client"], required: true }, // creating two options to choose from
 });
+
+
+//input validation using JOI
+function validateUser(user) {
+  const schema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+    role: Joi.string().required(),
+  });
+  return schema.validate(user);
+}
+
 
 //creating 2 mock users
 const User = mongoose.model("User", userSchema);
@@ -41,3 +55,4 @@ async function createUser() {
 
 
 module.exports = mongoose.model("User", userSchema);
+module.exports.validate = validateUser;

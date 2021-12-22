@@ -1,8 +1,8 @@
 const express = require("express");
-const Joi = require("Joi");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/Users.js");
+const validate = require('../models/Users.js')
 
 //get all Users
 router.get("/", async (req, res) => {
@@ -24,7 +24,7 @@ router.get("/:id", async (req, res) => {
 
 //create One User;
 router.post("/", async (req, res) => {
-  const { error } = validateUser(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   let user = new User({
     name: req.body.name,
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
 //update a User;
 
 router.put("/:id", async (req, res) => {
-  const { error } = validateUser(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const user = await User.findByIdAndUpdate(req.params.id, {
@@ -65,15 +65,6 @@ router.delete('/:id', async (req,res)=>{
 })
 
 
-//input validation using JOI
-function validateUser(user) {
-  const schema = Joi.object({
-    name: Joi.string().required(),
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-    role: Joi.string().required(),
-  });
-  return schema.validate(user);
-}
+
 
 module.exports = router;

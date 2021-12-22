@@ -12,6 +12,17 @@ const contractSchema = new mongoose.Schema({
   
 });
 
+//input validation using JOI
+function validateContract(contract) {
+  const schema = Joi.object({
+    numero: Joi.number().required(),
+    options: Joi.string(),
+    statut: Joi.string(),
+    startingDate: Joi.date(),
+    endingDate: Joi.date(),
+  });
+  return schema.validate(contract);
+}
 //creating 2 mock Contracts
 const Contract = mongoose.model("Contract", contractSchema);
 
@@ -45,3 +56,4 @@ async function createContract() {
 
 
 module.exports = mongoose.model("Contract", contractSchema);
+module.exports.validate= validateContract;

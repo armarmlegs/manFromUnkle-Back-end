@@ -3,6 +3,7 @@ const Joi = require("Joi");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Contract = require("../models/Contracts.js");
+const validate = require('../models/Contracts.js')
 
 //get all Contracts
 router.get("/", async (req, res) => {
@@ -27,7 +28,7 @@ router.get("/:id", async (req, res) => {
 
 //create One Contract;
 router.post("/", async (req, res) => {
-  const { error } = validateContract(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   let contract = new Contract({
     numero: req.body.numero,
@@ -43,7 +44,7 @@ router.post("/", async (req, res) => {
 //update a contract
 
 router.put("/:id", async (req, res) => {
-  const { error } = validateContract(req.body);
+  const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const contract = await Contract.findByIdAndUpdate(
@@ -72,16 +73,6 @@ router.delete('/:id', async (req,res)=>{
 
 })
 
-//input validation using JOI
-function validateContract(contract) {
-  const schema = Joi.object({
-    numero: Joi.number().required(),
-    options: Joi.string(),
-    statut: Joi.string(),
-    startingDate: Joi.date(),
-    endingDate: Joi.date(),
-  });
-  return schema.validate(contract);
-}
+
 
 module.exports = router;
