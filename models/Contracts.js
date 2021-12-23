@@ -1,22 +1,25 @@
 require("../config/database.js");
 const mongoose = require("mongoose");
+const Joi = require("joi");
+const { optionsSchema } = require("./ContractOptions");
 
 //création & sauvegarde des schemas &
 
 const contractSchema = new mongoose.Schema({
   numero: { type: Number, required: true },
-  options: { type: String,enum:["tout-risque", "mort-subite"] ,required: true },
-  statut: { type: String, enum:["pending","active", "finished"] },
-  startingDate:{type:Date},
-  endingDate:{type:Date},
-  
+  options: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Option",
+  }],
+  statut: { type: String, enum: ["pending", "active", "finished"] },
+  startingDate: { type: Date },
+  endingDate: { type: Date },
 });
 
 //input validation using JOI
 function validateContract(contract) {
   const schema = Joi.object({
     numero: Joi.number().required(),
-    options: Joi.string(),
     statut: Joi.string(),
     startingDate: Joi.date(),
     endingDate: Joi.date(),
@@ -27,20 +30,19 @@ function validateContract(contract) {
 const Contract = mongoose.model("Contract", contractSchema);
 
 async function createContract() {
-  const contract= [
+  const contract = [
     new Contract({
-        numero: 1,
-        options: "mort subite",
-        statut: "active",
-        startingDate:Date.now(),
-        endingDate:Date.now(),
+      numero: 1,
+      options: ['61c33d9e45e4c9393735d3e0', '61c33d9e45e4c9393735d3e3'],
+      statut: "active",
+      startingDate: Date.now(),
+      endingDate: Date.now(),
     }),
     new Contract({
-        numero: 2,
-        options: "mort subite",
-        statut: "active",
-        startingDate:Date.now(),
-        endingDate:Date.now(),
+      numero: 2,
+      statut: "active",
+      startingDate: Date.now(),
+      endingDate: Date.now(),
     }),
   ];
 
@@ -52,8 +54,16 @@ async function createContract() {
   }
 }
 
-// createContract();
+async function listContracts() {
+  const contracts = await Contract
+  .find()
+  .populate('options')
+  console.log(contracts)
+}
+
+// listContracts()
+// createContract()
 
 
 module.exports = mongoose.model("Contract", contractSchema);
-module.exports.validate= validateContract;
+module.exports.validate = validateContract;

@@ -1,4 +1,4 @@
-const Joi = require('Joi');
+
 require("./config/database.js");
 const express = require("express");
 

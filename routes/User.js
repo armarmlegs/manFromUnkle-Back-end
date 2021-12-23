@@ -2,11 +2,18 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const User = require("../models/Users.js");
-const validate = require('../models/Users.js')
+const validate = require('../models/Users.js');
+const {Contracts} = require('../models/Contracts');
+const {Option} = require('../models/ContractOptions');
 
 //get all Users
 router.get("/", async (req, res) => {
- const user = await User.find().sort("name");
+ const user = await User.find().populate({
+   path:'contract',
+   populate :[{
+     path:'options'
+   }]
+ }).sort("name");
   res.send(user);
 });
 
@@ -14,7 +21,8 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   console.log(req.params.id);
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id)
+  .populate('contract');
 
   if (!user)
     return res.status(404).send("The user with the given ID was not found.");
