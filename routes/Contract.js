@@ -3,19 +3,19 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Contract = require("../models/Contracts.js");
 const validate = require("../models/Contracts.js");
-const {Option} = require('../models/ContractOptions');
+const { Option } = require("../models/ContractOptions");
 
-//get all Contracts
+//get all Contracts with options
 router.get("/", async (req, res) => {
-  const contract = await Contract.find().populate('options').sort("numero");
+  const contract = await Contract.find().populate("options").sort("numero");
   res.send(contract);
 });
 
-//get One Contract
+//get One Contract with options
 
 router.get("/:id", async (req, res) => {
   console.log(req.params.id);
-  const contract = await Contract.findById(req.params.id);
+  const contract = await Contract.findById(req.params.id).populate("options");
 
   if (!Contract)
     return res
@@ -31,11 +31,11 @@ router.post("/", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const option = await Option.findById(req.body.optionId);
-  if(!option) return res.status(400).send('Invalid Option')
+  if (!option) return res.status(400).send("Invalid Option");
 
   let contract = new Contract({
     numero: req.body.numero,
-    options: [''],
+    options: [""],
     status: req.body.status,
     startingDate: req.body.startingDate,
     endingDate: req.body.endingDate,
@@ -54,7 +54,6 @@ router.put("/:id", async (req, res) => {
     req.params.id,
     {
       numero: req.body.numero,
-      options: req.body.options,
       status: req.body.status,
       startingDate: req.body.startingDate,
       endingDate: req.body.endingDate,
@@ -64,6 +63,24 @@ router.put("/:id", async (req, res) => {
   if (!contract) return res.status(404).send("no contract with this Id");
   res.send(contract);
   console.log("user updated");
+});
+
+//add \\ update options :
+router.patch("/:id/addOptions", async (req, res) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const optionId = req.body.options;
+  console.log(optionId);
+
+  const contract = await Contract.findByIdAndUpdate(
+    req.params.id,
+    { $push: { options: [optionId] } },
+    { new: true }
+  );
+  if (!contract) return res.status(404).send("no contract with this Id");
+  res.send(contract);
+  console.log('contract updated')
 });
 
 //deleting a user:

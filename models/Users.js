@@ -10,10 +10,10 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  contract: {
+  contract: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Contract",
-  },
+  }],
   role: { type: String, enum: ["admin", "client"], required: true }, // creating two options to choose from
 });
 
@@ -39,14 +39,14 @@ async function createUser() {
       email: "boobs@boobs.com",
       password: "1234",
       role: "admin",
-      contract: "61c3be72006018ea4b2c4810",
+      contract: ["61c3be72006018ea4b2c4810"],
     }),
     new User({
       name: "Unkle",
       email: "unkle@boobs.com",
       password: "1234",
       role: "client",
-      contract: "61c3bc032b66b49ef907b695",
+      contract: ["61c3bc032b66b49ef907b695"],
     }),
   ];
 
@@ -66,10 +66,10 @@ async function listUsers() {
   console.log(users);
 }
 
-createUser()
+// createUser()
+// listUsers();
 
-
-listUsers();
+//those two functions seed and read the database.
 
 module.exports = mongoose.model("User", userSchema);
 module.exports.validate = validateUser;

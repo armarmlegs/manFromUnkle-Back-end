@@ -5,6 +5,7 @@ const express = require("express");
 
 const user = require('./routes/User');
 const contract = require('./routes/Contract');
+const options = require('./routes/ContractOptions')
 
 
 
@@ -15,7 +16,8 @@ const app = express();
 // Routes and middleware
 app.use(express.json());
 app.use('/api/users', user);
-app.use('/api/contracts', contract)
+app.use('/api/contracts', contract);
+app.use('/api/options', options)
 
 
 // Error handlers
