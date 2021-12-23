@@ -2,6 +2,7 @@ require("../config/database.js");
 const mongoose = require("mongoose");
 const Joi = require("joi");
 const { optionsSchema } = require("./ContractOptions");
+const {Users} = require('./Users')
 
 //création & sauvegarde des schemas &
 
@@ -12,8 +13,13 @@ const contractSchema = new mongoose.Schema({
     ref: "Option",
   }],
   statut: { type: String, enum: ["pending", "active", "finished"] },
-  startingDate: { type: Date },
-  endingDate: { type: Date },
+  startingDate: { type: Date, required:true },
+  endingDate: { type: Date, required:true },
+  subscribers:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User',
+    required:true,
+  }]
 });
 
 //input validation using JOI
@@ -37,6 +43,7 @@ async function createContract() {
       statut: "active",
       startingDate: Date.now(),
       endingDate: Date.now(),
+      subscribers:["61c47c751fb1fa7d3962c50b"]
     }),
     new Contract({
       numero: 2,
@@ -58,6 +65,7 @@ async function listContracts() {
   const contracts = await Contract
   .find()
   .populate('options')
+  .populate('subscribers')
   console.log(contracts)
 }
 

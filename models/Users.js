@@ -32,7 +32,7 @@ function validateUser(user) {
 const User = mongoose.model("User", userSchema);
 
 async function createUser() {
-  User.remove({})
+  User.remove()
   const user = [
     new User({
       name: "Bouba",
@@ -73,3 +73,4 @@ async function listUsers() {
 
 module.exports = mongoose.model("User", userSchema);
 module.exports.validate = validateUser;
+module.exports.User = User

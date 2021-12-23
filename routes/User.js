@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
@@ -5,6 +6,8 @@ const User = require("../models/Users.js");
 const validate = require("../models/Users.js");
 const { Contracts } = require("../models/Contracts");
 const { Option } = require("../models/ContractOptions");
+const bcrypt = require("bcrypt");
+
 
 //get all Users  with contracts & options
 router.get("/", async (req, res) => {
@@ -44,14 +47,13 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  let user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    role: req.body.role,
-  });
+  let user = new User(_.pick(req.body, ["name", "email", "password", "role"]));
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt)
+
   user = await user.save();
-  res.send(user);
+  res.send(_.pick(user, ["_id", "name", "email", "role"]));
 });
 
 //update a User;
@@ -83,7 +85,7 @@ router.patch("/:id/addContract", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const contractId = req.body.contract;
-  console.log(contractId)
+  console.log(contractId);
 
   const user = await User.findByIdAndUpdate(
     req.params.id,
@@ -91,7 +93,6 @@ router.patch("/:id/addContract", async (req, res) => {
     { new: true }
   );
   if (!user) return res.status(404).send("no user with this Id");
-
 
   res.send(user);
   console.log("contract updated");
@@ -105,5 +106,22 @@ router.delete("/:id", async (req, res) => {
   res.send(user);
   console.log("user deleted");
 });
+
+//authentification
+
+// router.post("/auth", async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log(req.body.email)
+
+//   let user = await User.findOne({ email });
+//   console.log(user);
+//   if (!user) return res.status(400).send("invalid credentials");
+
+//   const isSamePassword = bcrypt.compareSync(password, user.password);
+//   if (!isSamePassword) return res.status(400).send("invalid credentials");
+
+
+//   res.send(user);
+// });
 
 module.exports = router;

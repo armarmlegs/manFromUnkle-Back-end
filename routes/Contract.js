@@ -83,7 +83,21 @@ router.patch("/:id/addOptions", async (req, res) => {
   console.log('contract updated')
 });
 
-//deleting a user:
+//add || update users
+router.patch('/:id/addSubscriber', async (req,res)=>{
+  const userId = req.body.subscribers;
+  console.log(userId);
+
+  const contract = await Contract.findByIdAndUpdate(
+    req.params.id,
+    {$push:{subscribers: userId}},
+    {new:true} )
+    if (!contract) return res.status(404).send("no contract with this Id");
+    res.send(contract);
+    console.log('contract subscribers updated')
+})
+
+//deleting a contract:
 
 router.delete("/:id", async (req, res) => {
   const contract = await Contract.findByIdAndDelete(req.params.id);
