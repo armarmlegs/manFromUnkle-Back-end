@@ -4,16 +4,17 @@ const mongoose = require("mongoose");
 const Contract = require("../models/Contracts.js");
 const validate = require("../models/Contracts.js");
 const { Option } = require("../models/ContractOptions");
+const admin = require('../middleWares/admin')  //==> middleware servant a proteger les routes
 
 //get all Contracts with options
-router.get("/", async (req, res) => {
+router.get("/" /*admin*/, async (req, res) => {
   const contract = await Contract.find().populate("options").sort("numero");
   res.send(contract);
 });
 
 //get One Contract with options
 
-router.get("/:id", async (req, res) => {
+router.get("/:id" /*admin*/, async (req, res) => {
   console.log(req.params.id);
   const contract = await Contract.findById(req.params.id).populate("options");
 
@@ -26,7 +27,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //create One Contract;
-router.post("/", async (req, res) => {
+router.post("/" /*admin*/, async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -84,7 +85,7 @@ router.patch("/:id/addOptions", async (req, res) => {
 });
 
 //add || update users
-router.patch('/:id/addSubscriber', async (req,res)=>{
+router.patch('/:id/addSubscriber' /*admin*/, async (req,res)=>{
   const userId = req.body.subscribers;
   console.log(userId);
 
@@ -99,7 +100,7 @@ router.patch('/:id/addSubscriber', async (req,res)=>{
 
 //deleting a contract:
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id" /*admin*/, async (req, res) => {
   const contract = await Contract.findByIdAndDelete(req.params.id);
   if (!contract) return res.status(404).send("no user with this id");
   res.send(contract);

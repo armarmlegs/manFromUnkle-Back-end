@@ -19,10 +19,10 @@ const contractSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:'User',
     required:true,
-  }]
+  }] //renvoi a un array d'objectsId qui seront populate dans les routes correspondantes.
 });
 
-//input validation using JOI
+// validation avec JOI
 function validateContract(contract) {
   const schema = Joi.object({
     numero: Joi.number().required(),
@@ -43,7 +43,7 @@ async function createContract() {
       statut: "active",
       startingDate: Date.now(),
       endingDate: Date.now(),
-      subscribers:["61c47c751fb1fa7d3962c50b"]
+      
     }),
     new Contract({
       numero: 2,
@@ -61,15 +61,6 @@ async function createContract() {
   }
 }
 
-async function listContracts() {
-  const contracts = await Contract
-  .find()
-  .populate('options')
-  .populate('subscribers')
-  console.log(contracts)
-}
-
-// listContracts()
 // createContract()
 
 
